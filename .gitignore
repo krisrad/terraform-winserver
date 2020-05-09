@@ -1,0 +1,7 @@
+.terraform
+_commands.sh
+mykey
+mykey.ppk
+mykey.pub
+terraform.tfstate
+terraform.tfvars
