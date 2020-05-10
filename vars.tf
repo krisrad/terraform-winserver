@@ -24,6 +24,8 @@ variable "INSTANCE_DEVICE_NAME" {
   default = "/dev/xvdh"
 }
 
+variable "EC2_INSTANCE_TYPE" {}
+
 variable "INSTANCE_USERNAME" {}
 
 variable "INSTANCE_PASSWORD" {}

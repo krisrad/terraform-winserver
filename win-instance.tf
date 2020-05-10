@@ -1,6 +1,6 @@
 resource "aws_instance" "win-appserver" {
   ami = var.AMIS_WIN_SRV_2016[var.AWS_REGION]
-  instance_type = "t2.micro"
+  instance_type = var.EC2_INSTANCE_TYPE
 
   # the VPC subnet
   subnet_id = element(module.main-vpc.public_subnets, 0)
@@ -19,6 +19,10 @@ resource "aws_instance" "win-appserver" {
     "Project Name" = var.AWS_PROJECT_NAME
   }
 
+  depends_on = [
+    aws_db_instance.mssql
+  ]
+
   user_data     = <<EOF
     <powershell>
       C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts\InitializeDisks.ps1
@@ -26,9 +30,9 @@ resource "aws_instance" "win-appserver" {
       net user ${var.INSTANCE_USERNAME} '${var.INSTANCE_PASSWORD}' /add /y
       net localgroup administrators ${var.INSTANCE_USERNAME} /add
 
-      netsh advfirewall firewall add rule name="ZENAHTTP 80" protocol=TCP dir=in localport=80 action=allow
+      netsh advfirewall firewall add rule name="ALLOWHTTPINBOUND 80" protocol=TCP dir=in localport=80 action=allow
       
-      Read-S3Object -BucketName ${var.S3_BUCKET_NAME} -KeyPrefix ${var.S3_INSTALLBLES_KEY_PREFIX} -Folder "D:\zena-installables"
+      Read-S3Object -BucketName ${var.S3_BUCKET_NAME} -KeyPrefix ${var.S3_INSTALLBLES_KEY_PREFIX} -Folder "D:\product-installables"
 
     </powershell>
   EOF
